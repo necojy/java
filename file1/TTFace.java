@@ -58,7 +58,9 @@ public class TTFace {
     			Imgproc.rectangle(src, new Point(rect.x,rect.y), new Point (rect.x + rect.width, rect.y +rect.height), new Scalar(0,0,255), 3);
     			// Crop the detected face and save it as a new image
     			Mat cropped = new Mat(src, rect);
-    			String outFileName = "images/face_"+ Integer.toString(count) + ".jpg";
+    			//////////////////////////////////////////////////////////////////////
+    			String outFileName = System.getProperty("user.home") + "/Downloads/face_"+ Integer.toString(count) + ".jpg";
+    			//////////////////////////////////////////////////////////////////////
     			// 如果文件已存在，則先刪除它
                 File file = new File(outFileName);
                 //直接開路徑看，確實會出現變化
@@ -70,8 +72,10 @@ public class TTFace {
     			System.out.println("Face saved to " + outFileName);
     			count++;
     		}
-    		
-    		Imgcodecs.imwrite("images/test_out.jpg",src);
+    		//////////////////////////////////////////////////////////////////////////////////
+    		String outputPath = System.getProperty("user.home") + "/Downloads/test_out.jpg";
+    		Imgcodecs.imwrite(outputPath, src);
+    		//////////////////////////////////////////////////////////////////////////////////
     		System.out.println("Image Detection finished!");
 
         } else {
