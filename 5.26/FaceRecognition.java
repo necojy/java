@@ -55,7 +55,7 @@ public class FaceRecognition extends JButton implements ActionListener {
 
             for (Rect rect : faceDetection.toArray()) {
                 Imgproc.rectangle(src, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
-                        new Scalar(0, 0, 255), 3);
+                        new Scalar(255, 255, 255), 3);
 
                 Mat cropped = new Mat(src, rect);
 
