@@ -1,4 +1,3 @@
-package ff.ForFace;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -7,12 +6,14 @@ import java.io.*;
 import javax.swing.*;
 import javax.imageio.*;
 
-public class ImageEditor extends JToggleButton implements ActionListener {
-	private BufferedImage editedImage;
+public class ImageEditor extends JButton implements ActionListener {
 
+    int pictureNumber = 0;
+    Image userChoosImage;
+  
     public ImageEditor(String label) {
         super(label);
-        addActionListener(this);
+        addActionListener(this);   
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -28,8 +29,7 @@ public class ImageEditor extends JToggleButton implements ActionListener {
 
         //讀入圖片選擇器
         ImageFileChooser imageFileChooser = new ImageFileChooser();
-        Image userChoosImage = imageFileChooser.openImage(frame);
-
+        userChoosImage = imageFileChooser.openImage(frame);
         JLabel imageLabel = new JLabel(new ImageIcon(userChoosImage));
 
 //--------------------------------------------------------------//
@@ -37,24 +37,22 @@ public class ImageEditor extends JToggleButton implements ActionListener {
         JPanel picturePanel = new JPanel(); 
         JPanel functionPanel = new JPanel(new GridLayout(5,0));
         JPanel drawingPanel = new MouseDrawingTool(null);
-        JPanel movePanel = new MouseDrawingTool(imageLabel);
         JPanel newImagePanel = new JPanel();
 
         
         //設定panel尺寸
-        picturePanel.setBounds(0, 0, width - 200, height);
+        picturePanel.setBounds(0, 30, width - 200, height);
         functionPanel.setBounds(width-200, 0, 200, height);
         drawingPanel.setBounds(0, 0, width - 200, height);
-        movePanel.setBounds(0, 0, width - 200, height);
         newImagePanel.setBounds(0, 0,width - 200, height);
         newImagePanel.setOpaque(false);
 
 //--------------------------------------------------------------//
         //將圖片跟圖片畫板新增至drawingPanel裡面       
         picturePanel.add(imageLabel);
-        picturePanel.add(movePanel);
-        movePanel.setOpaque(false);
+
 //--------------------------------------------------------------//
+
         //初始化繪畫區按鈕
         //1.自定義顏色   
         JButton colorButton = new JButton("自定義顏色");
@@ -70,41 +68,32 @@ public class ImageEditor extends JToggleButton implements ActionListener {
         JButton thicknessButton = new JButton("自定義畫筆粗細");
         thicknessButton.setBackground(Color.WHITE);
         drawingPanel.add(thicknessButton);
-        thicknessButton.setVisible(false);
-        //4.保存(獨立開來)
-//        JButton LittleSaveButton = new JButton("保存");
-//        LittleSaveButton.setBackground(Color.WHITE);
-//        LittleSaveButton.setVisible(false);
-//        LittleSaveButton.add(LittleSaveButton);
-//        saveButton
+        thicknessButton.setVisible(false);  
+        
+        //4.將畫下的內容儲存
+        JButton savePaint = new JButton("儲存筆跡");
+        drawingPanel.add(savePaint);
+        savePaint.setVisible(false);
+
 //--------------------------------------------------------------//
 
         //設定功能區按鈕  
-        //functionPanel.setLayout(new GridLayout(4,0));
+        functionPanel.setLayout(new GridLayout(6,0));
         //1.設定開啟繪畫按鈕的位置及大小
         JToggleButton openDrawButton = new JToggleButton("開啟繪圖模式");
-        openDrawButton.setSize(200, 500);
+        //openDrawButton.setSize(200, 500);
         drawingPanel.setOpaque(false);//初始化 drawingPanel(繪畫區域)，設置為不可見且透明
         functionPanel.add(openDrawButton);
-        //2.設定旋轉按鈕
-        JButton rotateButton = new JButton("旋轉");
-        rotateButton.setSize(200, 500);
-        double[] degrees = {0.0}; // 使用陣列包裝以便在內部類別中修改
-        functionPanel.add(rotateButton);
-        //3.新增圖片
-        JButton newImageButton = new JButton("新增圖片");
-        newImageButton.setSize(200, 500);
-        functionPanel.add(newImageButton);
-       
+        //2.儲存圖片
+        JButton SaveButton = new JButton("匯出圖片");
+        functionPanel.add(SaveButton);
+        //3.進行圖片調整
+        ImageNextSetting nexSetButton = new ImageNextSetting("下一步",userChoosImage);
+        functionPanel.add(nexSetButton);
         //4.設定回主頁面按鈕
         Home homeButton = new Home("回主頁面");
-        homeButton.setSize(200, 500);
         functionPanel.add(homeButton);
         
-        //5.保存圖片
-        JButton SaveButton = new JButton("保存圖片");
-        SaveButton.setSize(200,500);
-        functionPanel.add(SaveButton);
 
 //--------------------------------------------------------------//
         //用layeredPane統一全部panel，進行分層管理
@@ -112,9 +101,7 @@ public class ImageEditor extends JToggleButton implements ActionListener {
         layeredPane.add(functionPanel, Integer.valueOf(1));
         layeredPane.add(picturePanel, Integer.valueOf(2));
         layeredPane.add(drawingPanel, Integer.valueOf(9));
-        layeredPane.add(movePanel, Integer.valueOf(10));
-        //layeredPane.add(newImagePanel,Integer.valueOf(12));
-        
+ 
         //將layeredPane新增到frame
         frame.getContentPane().add(layeredPane);
 
@@ -122,8 +109,6 @@ public class ImageEditor extends JToggleButton implements ActionListener {
         //讀取圖片成功
         if (userChoosImage != null) 
         {
-        	editedImage = (BufferedImage)userChoosImage;
-
             //繪畫模式按鈕功能
             openDrawButton.addActionListener(new ActionListener() 
             {
@@ -139,7 +124,7 @@ public class ImageEditor extends JToggleButton implements ActionListener {
                         colorButton.setVisible(true);
                         pencilButton.setVisible(true);
                         thicknessButton.setVisible(true);
-//                        LittleSaveButton.setVisible(true);
+                        savePaint.setVisible(true);
                     }
                     else 
                     {
@@ -151,7 +136,7 @@ public class ImageEditor extends JToggleButton implements ActionListener {
                         colorButton.setVisible(false);
                         pencilButton.setVisible(false);
                         thicknessButton.setVisible(false);
-//                        LittleSaveButton.setVisible(false);
+                        savePaint.setVisible(false);
                     }
                 }
             }); 
@@ -190,74 +175,46 @@ public class ImageEditor extends JToggleButton implements ActionListener {
                     // 設定畫筆粗細
                     ((MouseDrawingTool) drawingPanel).setBrushSize(num);
                 }
-            });
-            
-          //繪畫模式內->4.保存
-//            LittleSaveButton.addActionListener(new ActionListener() {
-//                @Override
-//                public void actionPerformed(ActionEvent e) {
-//                    try {
-//                        // 取得屏幕尺寸
-//                        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-//                        int screenWidth = (int) screenSize.getWidth();
-//                        int screenHeight = (int) screenSize.getHeight();
-//
-//                        // 建立截圖的矩形範圍
-//                        Rectangle screenRect = new Rectangle(0, 0, screenWidth, screenHeight);
-//
-//                        // 執行截圖
-//                        Robot robot = new Robot();
-//                        BufferedImage screenshot = robot.createScreenCapture(screenRect);
-//
-//                        // 另存截圖
-//                        File outputFile = new File("user_screenshot.png"); // 設定儲存路徑和檔名
-//                        ImageIO.write(screenshot, "png", outputFile);
-//
-//                        JOptionPane.showMessageDialog(null, "畫面已儲存至 user_screenshot.png");
-//                    } catch (Exception ex) {
-//                        JOptionPane.showMessageDialog(null, "儲存畫面失敗：" + ex.getMessage());
-//                    }
-//                }
-//            });
-
-            
-             //繪畫模式內->4.保存
-//            LittleSaveButton.addActionListener(new ActionListener() {
-//            }
-//            });
-            
-            //實做旋轉按鈕功能
-            rotateButton.addActionListener(new ActionListener() {
+            });  
+            //繪畫模式內->4.筆跡储存  
+            savePaint.addActionListener(new ActionListener() 
+            {
                 @Override
-                public void actionPerformed(ActionEvent e) {
-                // 設定旋轉的角度
-                degrees[0] = (degrees[0] + 15.0) % 360;
-                ImageIcon icon = new ImageIcon();
-                icon.setImage(userChoosImage);
-                BufferedImage image = (BufferedImage) icon.getImage();
-                BufferedImage rotatedImage = RotateImage.rotate(image, degrees[0]); // 呼叫 rotateImage 方法進行圖片旋轉
-                ///////
-                editedImage = rotatedImage;
-                imageLabel.setIcon(new ImageIcon(rotatedImage)); // 更新圖片Icon
+                public void actionPerformed(ActionEvent e) 
+                {
+       
+                    Rectangle rectangle = new Rectangle(0, 100, width - 200, height-150);
+        
+                    // 執行儲存圖片的程式碼
+                    try 
+                    {
+                        BufferedImage image = new Robot().createScreenCapture(rectangle);
+                        userChoosImage = (Image) image;
+                        imageLabel.setIcon(new ImageIcon(userChoosImage));
 
-                movePanel.removeAll(); // 移除舊的元件
-                MouseDrawingTool newMovePanel = new MouseDrawingTool(imageLabel);
-                newMovePanel.setOpaque(false);
-                movePanel.add(newMovePanel); // 添加新的 MouseDrawingTool 到 movePanel
-                movePanel.setOpaque(false);
+                        //重新排序functionPanel的位置
+                        //有bug
+                        functionPanel.removeAll();
+                        functionPanel.add(openDrawButton);
+                        functionPanel.add(SaveButton);
 
-                picturePanel.removeAll();
-                picturePanel.setOpaque(false);
-                picturePanel.add(imageLabel);
-                picturePanel.add(movePanel);
+                        //將更改後的圖片傳到下一個介面；
+                        ImageNextSetting nexSetButton = new ImageNextSetting("下一步",userChoosImage);
+                        functionPanel.add(nexSetButton);
+                        functionPanel.add(homeButton);
 
-                layeredPane.remove(picturePanel);
-                layeredPane.remove(movePanel);
-                layeredPane.add(movePanel, Integer.valueOf(10));
-                layeredPane.add(picturePanel, Integer.valueOf(2));
+                        openDrawButton.setSelected(false);
+                        colorButton.setVisible(false);
+                        pencilButton.setVisible(false);
+                        thicknessButton.setVisible(false);
+                        savePaint.setVisible(false);
+                    }
+                    catch (AWTException e1) 
+                    {
+                        e1.printStackTrace(); 
+                    }
                 }
             });
-            
         
         }
         //讀取圖片失敗
@@ -268,79 +225,58 @@ public class ImageEditor extends JToggleButton implements ActionListener {
         
 
 //--------------------------------------------------------------//  
+    
+   
 
-        //當newImageButton被點擊時，新增圖片
-        newImageButton.addActionListener(new ActionListener() 
-        {   
-            @Override
-            public void actionPerformed(ActionEvent e) 
-            {     
-                Image newImage = imageFileChooser.openImage(frame);  
-                if(newImage == null) System.out.println("NO");
-                JLabel newImageLabel = new JLabel(new ImageIcon(newImage));
+    //當SaveButton被點擊時，儲存圖片
+    SaveButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) 
+        {
+            // 建立檔案選擇器對話框
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("儲存圖片"); // 設定對話框標題
 
-                //還須待修改
-                 JPanel frame = new MouseDrawingTool(newImageLabel);
-                 frame.setBounds(0, 0, width - 200, height);
-                 frame.setOpaque(false);
-                 newImagePanel.add(frame);
-                 newImagePanel.add(newImageLabel);
-                 layeredPane.add(frame,Integer.valueOf(14));
-                 layeredPane.add(newImagePanel,Integer.valueOf(3));
+            // 顯示對話框，讓使用者選擇儲存的檔案路徑和檔名
+            int userSelection = fileChooser.showSaveDialog(frame);
+
+            if (userSelection == JFileChooser.APPROVE_OPTION) 
+            {
+                File fileToSave = fileChooser.getSelectedFile();
+                String filePath = fileToSave.getAbsolutePath();
+
+                Rectangle rectangle = new Rectangle(0, 100, width - 200, height-150);
+
+                // 執行儲存圖片的程式碼
+                try 
+                {
+                    BufferedImage image = new Robot().createScreenCapture(rectangle);
+                    File outputImage = new File(filePath);
+                    ImageIO.write((BufferedImage)image, "png", outputImage);
+                    JOptionPane.showMessageDialog(null, "圖片儲存成功！");
+                }
+                catch (AWTException e1) 
+                {
+					e1.printStackTrace(); 
+                }
+                catch (IOException ex) 
+                {
+                    JOptionPane.showMessageDialog(null, "儲存圖片失敗：" + ex.getMessage());
+                }
             }
-        });
-
+        }
+    });
+        
         //當homeButton被點擊時，關閉目前frame
         homeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
             }
         });
-        
-     // 在 "保存圖片" 按鈕的 ActionListener 中新增程式碼
-        SaveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // 建立檔案選擇器對話框
-                JFileChooser fileChooser = new JFileChooser();
-                fileChooser.setDialogTitle("儲存圖片"); // 設定對話框標題
-
-                // 顯示對話框，讓使用者選擇儲存的檔案路徑和檔名
-                int userSelection = fileChooser.showSaveDialog(frame);
-
-                if (userSelection == JFileChooser.APPROVE_OPTION) {
-                    File fileToSave = fileChooser.getSelectedFile();
-                    String filePath = fileToSave.getAbsolutePath();
-
-                    // 執行儲存圖片的程式碼
-                    try {
-                        File outputImage = new File(filePath);
-                        ImageIO.write(editedImage, "png", outputImage);
-                        JOptionPane.showMessageDialog(null, "圖片儲存成功！");
-                    } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(null, "儲存圖片失敗：" + ex.getMessage());
-                    }
-                }
-            }
-        });
-
-
-
-
 
         frame.setSize(width, height);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        
-    }
-
-
-    
-//--------------------------------------------------------------//
-
-    public static void main(String[] args) {
-
     }
 
 }
