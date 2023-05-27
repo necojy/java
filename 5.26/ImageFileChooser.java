@@ -31,7 +31,7 @@ public class ImageFileChooser {
             } else if (result == JFileChooser.CANCEL_OPTION) {
                 System.out.printf("\n User Cancel Selected \n");
                 //parent.dispose(); 
-                return null;
+                break;
             }
         }
 

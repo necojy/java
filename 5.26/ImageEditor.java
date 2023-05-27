@@ -37,20 +37,24 @@ public class ImageEditor extends JButton implements ActionListener {
         JPanel picturePanel = new JPanel(); 
         JPanel functionPanel = new JPanel(new GridLayout(5,0));
         JPanel drawingPanel = new MouseDrawingTool(null);
+        JPanel movePanel = new MouseDrawingTool(imageLabel);
         JPanel newImagePanel = new JPanel();
 
         
         //設定panel尺寸
-        picturePanel.setBounds(0, 30, width - 200, height);
+        picturePanel.setBounds(0, 80, width - 200, height);
         functionPanel.setBounds(width-200, 0, 200, height);
         drawingPanel.setBounds(0, 0, width - 200, height);
+        
         newImagePanel.setBounds(0, 0,width - 200, height);
+        movePanel.setBounds(0, 0, width - 200, height);
         newImagePanel.setOpaque(false);
 
 //--------------------------------------------------------------//
         //將圖片跟圖片畫板新增至drawingPanel裡面       
         picturePanel.add(imageLabel);
-
+        picturePanel.add(movePanel);
+        movePanel.setOpaque(false);
 //--------------------------------------------------------------//
 
         //初始化繪畫區按鈕
@@ -69,8 +73,15 @@ public class ImageEditor extends JButton implements ActionListener {
         thicknessButton.setBackground(Color.WHITE);
         drawingPanel.add(thicknessButton);
         thicknessButton.setVisible(false);  
-        
-        //4.將畫下的內容儲存
+        //4.放大圖片
+        JButton bigButton = new JButton("放大");
+        drawingPanel.add(bigButton);
+        bigButton.setVisible(false); 
+        //5.放大圖片
+        JButton smallButton = new JButton("縮小");
+        drawingPanel.add(smallButton);
+        smallButton.setVisible(false); 
+        //6.將畫下的內容儲存
         JButton savePaint = new JButton("儲存筆跡");
         drawingPanel.add(savePaint);
         savePaint.setVisible(false);
@@ -94,6 +105,7 @@ public class ImageEditor extends JButton implements ActionListener {
         Home homeButton = new Home("回主頁面");
         functionPanel.add(homeButton);
         
+        
 
 //--------------------------------------------------------------//
         //用layeredPane統一全部panel，進行分層管理
@@ -101,6 +113,7 @@ public class ImageEditor extends JButton implements ActionListener {
         layeredPane.add(functionPanel, Integer.valueOf(1));
         layeredPane.add(picturePanel, Integer.valueOf(2));
         layeredPane.add(drawingPanel, Integer.valueOf(9));
+        layeredPane.add(movePanel, Integer.valueOf(10));
  
         //將layeredPane新增到frame
         frame.getContentPane().add(layeredPane);
@@ -124,6 +137,8 @@ public class ImageEditor extends JButton implements ActionListener {
                         colorButton.setVisible(true);
                         pencilButton.setVisible(true);
                         thicknessButton.setVisible(true);
+                        bigButton.setVisible(true);
+                        smallButton.setVisible(true);
                         savePaint.setVisible(true);
                     }
                     else 
@@ -136,6 +151,8 @@ public class ImageEditor extends JButton implements ActionListener {
                         colorButton.setVisible(false);
                         pencilButton.setVisible(false);
                         thicknessButton.setVisible(false);
+                        bigButton.setVisible(false);
+                        smallButton.setVisible(false);
                         savePaint.setVisible(false);
                     }
                 }
@@ -176,7 +193,36 @@ public class ImageEditor extends JButton implements ActionListener {
                     ((MouseDrawingTool) drawingPanel).setBrushSize(num);
                 }
             });  
-            //繪畫模式內->4.筆跡储存  
+            //繪畫模式內->4.放大圖片
+            bigButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // 假設您已經有了 JLabel imageLabel 和 Image image
+
+                    double scale = 1.2; // 縮放因子，每次放大20%
+                    int newWidth = (int) (userChoosImage.getWidth(null) * scale);
+                    int newHeight = (int) (userChoosImage.getHeight(null) * scale);
+
+                    userChoosImage = userChoosImage.getScaledInstance(newWidth, newHeight, Image.SCALE_DEFAULT);
+                    imageLabel.setIcon(new ImageIcon(userChoosImage));
+                }
+            });
+            //繪畫模式內->5.縮小圖片
+            smallButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // 假設您已經有了 JLabel imageLabel 和 Image image
+
+                    double scale = 0.8; // 縮放因子，每次放大20%
+                    int newWidth = (int) (userChoosImage.getWidth(null) * scale);
+                    int newHeight = (int) (userChoosImage.getHeight(null) * scale);
+
+                    userChoosImage = userChoosImage.getScaledInstance(newWidth, newHeight, Image.SCALE_DEFAULT);
+                    imageLabel.setIcon(new ImageIcon(userChoosImage));
+                }
+            });
+            
+            //繪畫模式內->6.筆跡储存  
             savePaint.addActionListener(new ActionListener() 
             {
                 @Override
@@ -207,6 +253,8 @@ public class ImageEditor extends JButton implements ActionListener {
                         colorButton.setVisible(false);
                         pencilButton.setVisible(false);
                         thicknessButton.setVisible(false);
+                        bigButton.setVisible(false); 
+                        smallButton.setVisible(false); 
                         savePaint.setVisible(false);
                     }
                     catch (AWTException e1) 
@@ -228,8 +276,8 @@ public class ImageEditor extends JButton implements ActionListener {
     
    
 
-    //當SaveButton被點擊時，儲存圖片
-    SaveButton.addActionListener(new ActionListener() {
+        //當SaveButton被點擊時，儲存圖片
+        SaveButton.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) 
         {
@@ -279,6 +327,7 @@ public class ImageEditor extends JButton implements ActionListener {
             }
         });
 
+        
         frame.setSize(width, height);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

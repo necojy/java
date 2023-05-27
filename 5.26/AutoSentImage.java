@@ -34,8 +34,8 @@ public class AutoSentImage extends JButton implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         try {
             //獲取chrome插件，並開啟chrome瀏覽器
+            System.setProperty("webdriver.chrome.driver", "C:\\Users\\USER\\Desktop\\Demo1\\所需物件\\Chrome\\chromedriver_win32\\chromedriver.exe");
             System.setProperty("webdriver.chrome.driver", "C:\\Users\\USER\\Desktop\\need intall\\Chrome\\chromedriver_win32\\chromedriver.exe");
-
             ////////自動傳送圖片////////
             Robot robot = new Robot();
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -45,21 +45,31 @@ public class AutoSentImage extends JButton implements ActionListener {
 
             ImageFileChooser imageFileChooser = new ImageFileChooser();
             List<Image> userChosenImages = imageFileChooser.openMulitImages(frame);
+
             if (userChosenImages != null && !userChosenImages.isEmpty()) {
+
+                // 創建一個JOptionPane來請求使用者輸入帳號
+                //String userAccount = JOptionPane.showInputDialog(frame, "請輸入帳號:");
+                //String userPassword = JOptionPane.showInputDialog(frame, "請輸入密碼:");
+                String sendName = JOptionPane.showInputDialog(frame, "請輸入傳送對象名稱:");
 
                 //開啟messenger網站，等待三秒完後登入
                 WebDriver driver = new ChromeDriver();
                 driver.manage().window().maximize();
                 driver.get("https://www.messenger.com/?locale=zh_TW");
                 Thread.sleep(3000);
+                //driver.findElement(By.id("email")).sendKeys(userAccount);
+                //driver.findElement(By.name("pass")).sendKeys(userPassword);
                 driver.findElement(By.id("email")).sendKeys("qwe017953@gmail.com");
                 driver.findElement(By.name("pass")).sendKeys("zxcvbnm,./123");
                 driver.findElement(By.name("login")).click();
 
                 // 等待三秒後，點選欲選擇的欄位
                 Thread.sleep(3000);
-                WebElement listItem = driver.findElement(By.xpath("//span[text()='曹宥翔']"));
+                //WebElement listItem = driver.findElement(By.xpath("//span[text()='曹宥翔']"));
+               // WebElement listItem = driver.findElement(By.xpath("//span[text()='李小名']"));
                 //WebElement listItem = driver.findElement(By.xpath("//span[text()='Allen Wu']"));
+                WebElement listItem = driver.findElement(By.xpath("//span[text()='" + sendName + "']"));
                 listItem.click();//點擊空白處
                 Thread.sleep(2000);
                 WebElement inputDiv = driver.findElement(By.xpath("//div[@aria-label='訊息']"));
@@ -87,7 +97,9 @@ public class AutoSentImage extends JButton implements ActionListener {
                 }
                 JOptionPane.showMessageDialog(null, "傳輸完畢!");
                 driver.close();
-            } else {
+            }
+            else
+            {
                 JOptionPane.showMessageDialog(null, "讀取圖片失敗!");
             }
         } catch (Exception ex) {
