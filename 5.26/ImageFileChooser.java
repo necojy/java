@@ -1,8 +1,6 @@
 import java.awt.Image;
 import java.io.File;
 import javax.imageio.ImageIO;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 
 import java.awt.event.*;
 import javax.swing.*;
@@ -27,7 +25,8 @@ public class ImageFileChooser {
                     image = ImageIO.read(selectedFile);
                     if (image == null) throw new Exception();
                 } catch (Exception ex) {
-                    System.out.printf("\n Please Choose Image File \n");
+                	JOptionPane.showMessageDialog(null,"請選擇圖片格式");
+                    //System.out.printf("\n Please Choose Image File \n");
                 }
             } else if (result == JFileChooser.CANCEL_OPTION) {
                 System.out.printf("\n User Cancel Selected \n");
