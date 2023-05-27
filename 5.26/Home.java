@@ -31,9 +31,9 @@ public class Home extends JToggleButton implements ActionListener {
         JPanel backgroundPanel = new JPanel();
         backgroundPanel.setBackground(Color.pink);
         backgroundPanel.setBounds(0,0,width,height);
-        // //1.人臉辨識
-        // FaceRecognition FaceRecognitionButton = new FaceRecognition("人臉辨識");
-        // homepanel.add(FaceRecognitionButton);
+        //1.人臉辨識
+        FaceRecognition FaceRecognitionButton = new FaceRecognition("人臉辨識");
+        homepanel.add(FaceRecognitionButton);
 
         //2.進行圖片編輯
         ImageEditor imageEditorButton = new ImageEditor("圖片編輯");
@@ -41,9 +41,9 @@ public class Home extends JToggleButton implements ActionListener {
         //當它被按下時會跳關閉目前的JFrame
         //imageEditorButton.addActionListener(e -> frame.dispose());
 
-        // //3.自動分享圖片
-        // AutoSentImage autoSentButton = new AutoSentImage("自動分享圖片");
-        // homepanel.add(autoSentButton);
+        //3.自動分享圖片
+        AutoSentImage autoSentButton = new AutoSentImage("自動分享圖片");
+        homepanel.add(autoSentButton);
 
         JLayeredPane layeredPane = new JLayeredPane();
         layeredPane.add(backgroundPanel,Integer.valueOf(0));
@@ -74,26 +74,17 @@ public class Home extends JToggleButton implements ActionListener {
         backgroundPanel.setBackground(Color.pink);
         backgroundPanel.setBounds(0,0,width,height);
 
-        // //1.人臉辨識
-        // FaceRecognition FaceRecognitionButton = new FaceRecognition("人臉辨識");
-        // homepanel.add(FaceRecognitionButton);
-
-        //2.進行圖片編輯
-        //ImageEditor imageEditorButton = new ImageEditor("圖片編輯");
-        //homepanel.add(imageEditorButton);
-        //當它被按下時會跳關閉目前的JFrame
-        //imageEditorButton.addActionListener(ex -> frame.dispose());
+        //1.人臉辨識
+        FaceRecognition FaceRecognitionButton = new FaceRecognition("人臉辨識");
+        homepanel.add(FaceRecognitionButton);
 
         //2.進行圖片編輯
         ImageEditor imageEditorButton = new ImageEditor("圖片編輯");
         homepanel.add(imageEditorButton);
 
-        //ImageEditorPage imageEditorPageButton = new ImageEditorPage("圖像編輯");
-        //homepanel.add(imageEditorPageButton);
-
         // //3.自動分享圖片
-        // AutoSentImage autoSentButton = new AutoSentImage("自動分享圖片");
-        // homepanel.add(autoSentButton);
+        AutoSentImage autoSentButton = new AutoSentImage("自動分享圖片");
+        homepanel.add(autoSentButton);
 
         JLayeredPane layeredPane = new JLayeredPane();
         layeredPane.add(backgroundPanel,Integer.valueOf(0));

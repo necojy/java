@@ -147,9 +147,12 @@ public class ImageNextSetting extends JButton implements ActionListener {
                     newImage = imageFileChooser.openImage(frame);  
                     JLabel newImageLabel = new JLabel(new ImageIcon(newImage));
                     newImagePanel.add(newImageLabel);
-                    newImagePanel.setBackground(Color.red);
-                    
+                    //newImagePanel.setBackground(Color.red);
+                    newImagePanel.setOpaque(false);
+                    newImagePanel.setBackground(null);
+
                     JPanel movePanel2 = new MouseDrawingTool(newImageLabel);
+                    movePanel2.setOpaque(false);
                     newImagePanel.add(movePanel2);
                     layeredPane.add(newImagePanel,Integer.valueOf(100));
                 }
@@ -165,9 +168,21 @@ public class ImageNextSetting extends JButton implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) 
             {
-                // 建立檔案選擇器對話框
+            	 BufferedImage image = null;
+            	 Rectangle rectangle = new Rectangle(0, 100, width - 200, height-150);
+            	 try 
+                 {
+                     image = new Robot().createScreenCapture(rectangle);
+                 }
+            	 catch (AWTException e1) 
+                 {
+                     e1.printStackTrace(); 
+                 }
+            	 
+            	// 建立檔案選擇器對話框
                 JFileChooser fileChooser = new JFileChooser();
                 fileChooser.setDialogTitle("儲存圖片"); // 設定對話框標題
+                
     
                 // 顯示對話框，讓使用者選擇儲存的檔案路徑和檔名
                 int userSelection = fileChooser.showSaveDialog(frame);
@@ -177,21 +192,20 @@ public class ImageNextSetting extends JButton implements ActionListener {
                     File fileToSave = fileChooser.getSelectedFile();
                     String filePath = fileToSave.getAbsolutePath();
     
-                    Rectangle rectangle = new Rectangle(frame.getX()+10,frame.getY()+82,500,600);          
+                    //Rectangle rectangle = new Rectangle(frame.getX(),frame.getY(),width - 200,height-150);       
 
                     // 執行儲存圖片的程式碼
                     try 
                     {
-                        BufferedImage image = new Robot().createScreenCapture(rectangle);
                         File outputImage = new File(filePath);
                         //ImageIO.write((BufferedImage)userChoosImage, "png", outputImage);
-                        ImageIO.write((BufferedImage)image, "png", outputImage);
+                        ImageIO.write(image, "png", outputImage);
                         JOptionPane.showMessageDialog(null, "圖片儲存成功！");
                     }
-                    catch (AWTException e1) 
-                    {
-                        e1.printStackTrace(); 
-                    }
+//                    catch (AWTException e1) 
+//                    {
+//                        e1.printStackTrace(); 
+//                    }
                     catch (IOException ex) 
                     {
                         JOptionPane.showMessageDialog(null, "儲存圖片失敗：" + ex.getMessage());

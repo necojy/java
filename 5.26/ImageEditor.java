@@ -233,6 +233,16 @@ public class ImageEditor extends JButton implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) 
         {
+        	BufferedImage image = null;
+       	 	Rectangle rectangle = new Rectangle(0, 100, width - 200, height-150);
+       	 	try 
+            {
+                image = new Robot().createScreenCapture(rectangle);
+            }
+       	 	catch (AWTException e1) 
+            {
+                e1.printStackTrace(); 
+            }
             // 建立檔案選擇器對話框
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("儲存圖片"); // 設定對話框標題
@@ -245,20 +255,15 @@ public class ImageEditor extends JButton implements ActionListener {
                 File fileToSave = fileChooser.getSelectedFile();
                 String filePath = fileToSave.getAbsolutePath();
 
-                Rectangle rectangle = new Rectangle(0, 100, width - 200, height-150);
-
                 // 執行儲存圖片的程式碼
                 try 
                 {
-                    BufferedImage image = new Robot().createScreenCapture(rectangle);
+                    //BufferedImage image = new Robot().createScreenCapture(rectangle);
                     File outputImage = new File(filePath);
                     ImageIO.write((BufferedImage)image, "png", outputImage);
                     JOptionPane.showMessageDialog(null, "圖片儲存成功！");
                 }
-                catch (AWTException e1) 
-                {
-					e1.printStackTrace(); 
-                }
+                
                 catch (IOException ex) 
                 {
                     JOptionPane.showMessageDialog(null, "儲存圖片失敗：" + ex.getMessage());
