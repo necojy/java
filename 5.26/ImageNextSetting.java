@@ -9,7 +9,9 @@ import javax.imageio.*;
 public class ImageNextSetting extends JButton implements ActionListener {    
 
     private Image userChoosImage;
+    private Image tempImage = userChoosImage;
     private Image newImage = null;
+    public int x,y,width,heigth;
 
     public ImageNextSetting(String label,Image userChoosImage) {
         super(label);
@@ -25,6 +27,10 @@ public class ImageNextSetting extends JButton implements ActionListener {
    
 
     public void actionPerformed(ActionEvent e) {
+    	
+    	//關閉舊的JFrame
+    	JFrame olderFrame = (JFrame) SwingUtilities.getWindowAncestor((JButton) e.getSource());
+        olderFrame.dispose();
 
         //設置frame視窗
         JFrame frame = new JFrame("設定圖片樣式");
@@ -40,20 +46,67 @@ public class ImageNextSetting extends JButton implements ActionListener {
         //--------------------------------------------------------------//
         //設置panel
         JPanel picturePanel = new JPanel(); 
-        JPanel functionPanel = new JPanel(new GridLayout(5,0));
+        JPanel functionPanel = new JPanel(new GridLayout(4,0));
         JPanel movePanel = new MouseDrawingTool(imageLabel);
         JPanel newImagePanel = new JPanel();
+        JPanel topArea = new JPanel();
 
         //設定panel尺寸
-        picturePanel.setBounds(0, 0, width - 200, height);
-        functionPanel.setBounds(width-200, 0, 200, height);
+        picturePanel.setBounds(0, 80, width - 200, height);
+        functionPanel.setBounds(width-200, 0, 200, height-50);
         movePanel.setBounds(0, 0, width - 200, height);
         newImagePanel.setBounds(0, 0,width - 200, height);
         newImagePanel.setOpaque(false);
+        topArea.setBounds(0,0,width-200,80);
+
+        //設定panel背景           
+        topArea.setBackground(new Color(255, 255, 255));
+        picturePanel.setBackground(new Color(255, 255, 255));
+
 
         //--------------------------------------------------------------//
-        
-        //將圖片跟圖片畫板新增至drawingPanel裡面       
+
+        //topArea設定
+
+        //1.放大圖片
+        JButton bigButton = new JButton("放大");
+        topArea.add(bigButton);
+        bigButton.setVisible(true); 
+        //2.縮小圖片
+        JButton smallButton = new JButton("縮小");
+        topArea.add(smallButton);
+        smallButton.setVisible(true);
+
+        bigButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 假設您已經有了 JLabel imageLabel 和 Image image
+
+                double scale = 1.05; // 縮放因子，每次放大5%
+                int newWidth = (int) (userChoosImage.getWidth(null) * scale);
+                int newHeight = (int) (userChoosImage.getHeight(null) * scale);
+
+                userChoosImage = userChoosImage.getScaledInstance(newWidth, newHeight, Image.SCALE_DEFAULT);
+                imageLabel.setIcon(new ImageIcon(userChoosImage));
+            }
+        });
+        //繪畫模式內->5.縮小圖片
+        smallButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 假設您已經有了 JLabel imageLabel 和 Image image
+
+                double scale = 0.95; // 縮放因子，每次縮小5%
+                int newWidth = (int) (userChoosImage.getWidth(null) * scale);
+                int newHeight = (int) (userChoosImage.getHeight(null) * scale);
+
+                userChoosImage = userChoosImage.getScaledInstance(newWidth, newHeight, Image.SCALE_DEFAULT);
+                imageLabel.setIcon(new ImageIcon(userChoosImage));
+            }
+        });
+       
+        //--------------------------------------------------------------//
+           
         picturePanel.add(imageLabel);
         picturePanel.add(movePanel);
         movePanel.setOpaque(false);
@@ -61,24 +114,41 @@ public class ImageNextSetting extends JButton implements ActionListener {
         //--------------------------------------------------------------//
 
         //設定功能區按鈕  
+        functionPanel.setBackground(new Color(245, 222, 179));
+
         //1.設定旋轉按鈕
-        JButton rotateButton = new JButton("旋轉");
+        ImageIcon rotateIcon = new ImageIcon("src\\rotate.png");
+        JButton rotateButton = new JButton("");     
+        rotateButton.setIcon(rotateIcon);
+        rotateButton.setBackground(null);
+        rotateButton.setOpaque(false);
         rotateButton.setSize(200, 500);
         double[] degrees = {0.0}; // 使用陣列包裝以便在內部類別中修改
         functionPanel.add(rotateButton);
-
+        
         //2.新增圖片
-        JButton newImageButton = new JButton("新增相框");
+        ImageIcon addImageIcon = new ImageIcon("src\\addImage.png");
+        JButton newImageButton = new JButton("");
+        newImageButton.setIcon(addImageIcon);
+        newImageButton.setBackground(null);
+        newImageButton.setOpaque(false);
         newImageButton.setSize(200, 500);
         functionPanel.add(newImageButton);
 
         //3.儲存圖片
-        JButton SaveButton = new JButton("匯出圖片");
+        ImageIcon saveIcon = new ImageIcon("src\\save.png");
+        JButton SaveButton = new JButton("");
+        SaveButton.setIcon(saveIcon);
+        SaveButton.setBackground(null);
+        SaveButton.setOpaque(false);
         functionPanel.add(SaveButton);
 
         //4.設定回主頁面按鈕
-        Home homeButton = new Home("回主頁面");
-        homeButton.setSize(200, 500);
+        ImageIcon HomeIcon = new ImageIcon("src\\BackHome.png");
+        Home homeButton = new Home("");
+        homeButton.setIcon(HomeIcon);
+        homeButton.setBackground(null);
+        homeButton.setOpaque(false);
         functionPanel.add(homeButton);
 
         //--------------------------------------------------------------//
@@ -87,7 +157,7 @@ public class ImageNextSetting extends JButton implements ActionListener {
         layeredPane.add(functionPanel, Integer.valueOf(1));
         layeredPane.add(picturePanel, Integer.valueOf(2));
         layeredPane.add(movePanel, Integer.valueOf(10));
-        
+        layeredPane.add(topArea, Integer.valueOf(100));
 
 
         //將layeredPane新增到frame
@@ -107,22 +177,8 @@ public class ImageNextSetting extends JButton implements ActionListener {
                 BufferedImage image = (BufferedImage) icon.getImage();
                 BufferedImage rotatedImage = RotateImage.rotate(image, degrees[0]); // 呼叫 rotateImage 方法進行圖片旋轉
                 imageLabel.setIcon(new ImageIcon(rotatedImage)); // 更新圖片Icon
+                //userChoosImage = (Image)rotatedImage;
 
-                movePanel.removeAll(); // 移除舊的元件
-                MouseDrawingTool newMovePanel = new MouseDrawingTool(imageLabel);
-                newMovePanel.setOpaque(false);
-                movePanel.add(newMovePanel); // 添加新的 MouseDrawingTool 到 movePanel
-                movePanel.setOpaque(false);
-
-                picturePanel.removeAll();
-                picturePanel.setOpaque(false);
-                picturePanel.add(imageLabel);
-                picturePanel.add(movePanel);
-
-                layeredPane.remove(picturePanel);
-                layeredPane.remove(movePanel);
-                layeredPane.add(movePanel, Integer.valueOf(10));
-                layeredPane.add(picturePanel, Integer.valueOf(2));
                 }
             });
 
@@ -147,7 +203,6 @@ public class ImageNextSetting extends JButton implements ActionListener {
                     newImage = imageFileChooser.openImage(frame);  
                     JLabel newImageLabel = new JLabel(new ImageIcon(newImage));
                     newImagePanel.add(newImageLabel);
-                    //newImagePanel.setBackground(Color.red);
                     newImagePanel.setOpaque(false);
                     newImagePanel.setBackground(null);
 
@@ -155,6 +210,8 @@ public class ImageNextSetting extends JButton implements ActionListener {
                     movePanel2.setOpaque(false);
                     newImagePanel.add(movePanel2);
                     layeredPane.add(newImagePanel,Integer.valueOf(100));
+              	
+              
                 }
                 else 
                 {
@@ -169,7 +226,7 @@ public class ImageNextSetting extends JButton implements ActionListener {
             public void actionPerformed(ActionEvent e) 
             {
             	 BufferedImage image = null;
-            	 Rectangle rectangle = new Rectangle(0, 100, width - 200, height-150);
+            	 Rectangle rectangle = new Rectangle(25, 100, width - 200-25, height-150);
             	 try 
                  {
                      image = new Robot().createScreenCapture(rectangle);
@@ -189,16 +246,18 @@ public class ImageNextSetting extends JButton implements ActionListener {
     
                 if (userSelection == JFileChooser.APPROVE_OPTION) 
                 {
+                    
                     File fileToSave = fileChooser.getSelectedFile();
                     String filePath = fileToSave.getAbsolutePath();
-    
-                    //Rectangle rectangle = new Rectangle(frame.getX(),frame.getY(),width - 200,height-150);       
 
                     // 執行儲存圖片的程式碼
                     try 
                     {
+                    	
                         File outputImage = new File(filePath);
-                        //ImageIO.write((BufferedImage)userChoosImage, "png", outputImage);
+                        ImageIO.write((BufferedImage)image, "png", outputImage);
+                        Convert convert = new Convert();
+                        image = convert.transferAlpha(image);
                         ImageIO.write(image, "png", outputImage);
                         JOptionPane.showMessageDialog(null, "圖片儲存成功！");
                     }

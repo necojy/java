@@ -1,4 +1,3 @@
-package ff.ForFace;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
@@ -100,11 +99,12 @@ public class FaceRecognition extends JButton implements ActionListener {
                 String outFileName = getUniqueFileName(outputFolder, "test");
                 Imgcodecs.imwrite(outFileName, result1);
                 System.out.println("Face saved to " + outFileName);
-
+                JOptionPane.showMessageDialog(null, "辨識完畢，圖片存放在\"C:\\\\output\"");
             }
             System.out.println("Image Detection finished!");
 
-        } else {
+        } 
+        else {
             System.out.println("No file selected.");
         }
     }

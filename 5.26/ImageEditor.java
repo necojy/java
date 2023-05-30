@@ -21,6 +21,8 @@ public class ImageEditor extends JButton implements ActionListener {
         // 開啟時顯示注意事項
         JOptionPane.showMessageDialog(null, "請選擇符合格式的圖片 EX:PNG , JPG ");
 
+        
+
         //設置frame視窗
         JFrame frame = new JFrame("Mouse Drawing Tool");
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -39,17 +41,23 @@ public class ImageEditor extends JButton implements ActionListener {
         JPanel drawingPanel = new MouseDrawingTool(null);
         JPanel movePanel = new MouseDrawingTool(imageLabel);
         JPanel newImagePanel = new JPanel();
+        JPanel topArea = new JPanel();
 
         
         //設定panel尺寸
         picturePanel.setBounds(0, 80, width - 200, height);
-        functionPanel.setBounds(width-200, 0, 200, height);
+        functionPanel.setBounds(width-200, 0, 200, height-50);
         drawingPanel.setBounds(0, 0, width - 200, height);
         
         newImagePanel.setBounds(0, 0,width - 200, height);
         movePanel.setBounds(0, 0, width - 200, height);
         newImagePanel.setOpaque(false);
-
+        
+        topArea.setBounds(0,0,width,height);
+        
+        //設定panel背景           
+        topArea.setBackground(new Color(250, 250, 240));
+        picturePanel.setBackground(new Color(250, 250, 240));
 //--------------------------------------------------------------//
         //將圖片跟圖片畫板新增至drawingPanel裡面       
         picturePanel.add(imageLabel);
@@ -77,7 +85,7 @@ public class ImageEditor extends JButton implements ActionListener {
         JButton bigButton = new JButton("放大");
         drawingPanel.add(bigButton);
         bigButton.setVisible(false); 
-        //5.放大圖片
+        //5.縮小圖片
         JButton smallButton = new JButton("縮小");
         drawingPanel.add(smallButton);
         smallButton.setVisible(false); 
@@ -89,20 +97,38 @@ public class ImageEditor extends JButton implements ActionListener {
 //--------------------------------------------------------------//
 
         //設定功能區按鈕  
-        functionPanel.setLayout(new GridLayout(6,0));
+        functionPanel.setLayout(new GridLayout(4,0));
+        //functionPanel.setOpaque(false);
+        functionPanel.setBackground(new Color(245, 222, 179));
+        
         //1.設定開啟繪畫按鈕的位置及大小
-        JToggleButton openDrawButton = new JToggleButton("開啟繪圖模式");
-        //openDrawButton.setSize(200, 500);
+        ImageIcon drawIcon = new ImageIcon("src\\pan.png");
+        JToggleButton openDrawButton = new JToggleButton("");
         drawingPanel.setOpaque(false);//初始化 drawingPanel(繪畫區域)，設置為不可見且透明
+        openDrawButton.setIcon(drawIcon);
+        openDrawButton.setBackground(null);
+        openDrawButton.setOpaque(false);
         functionPanel.add(openDrawButton);
         //2.儲存圖片
-        JButton SaveButton = new JButton("匯出圖片");
+        ImageIcon saveIcon = new ImageIcon("src\\save.png");
+        JButton SaveButton = new JButton("");
+        SaveButton.setIcon(saveIcon);
+        SaveButton.setBackground(null);
+        SaveButton.setOpaque(false);
         functionPanel.add(SaveButton);
-        //3.進行圖片調整
-        ImageNextSetting nexSetButton = new ImageNextSetting("下一步",userChoosImage);
+        //3.下一步，進行圖片調整
+        ImageIcon nextIcon = new ImageIcon("src\\next.png");
+        ImageNextSetting nexSetButton = new ImageNextSetting("",userChoosImage);
+        nexSetButton.setIcon(nextIcon);
+        nexSetButton.setBackground(null);
+        nexSetButton.setOpaque(false);
         functionPanel.add(nexSetButton);
         //4.設定回主頁面按鈕
-        Home homeButton = new Home("回主頁面");
+        ImageIcon HomeIcon = new ImageIcon("src\\BackHome.png");
+        Home homeButton = new Home("");
+        homeButton.setIcon(HomeIcon);
+        homeButton.setBackground(null);
+        homeButton.setOpaque(false);
         functionPanel.add(homeButton);
         
         
@@ -114,7 +140,7 @@ public class ImageEditor extends JButton implements ActionListener {
         layeredPane.add(picturePanel, Integer.valueOf(2));
         layeredPane.add(drawingPanel, Integer.valueOf(9));
         layeredPane.add(movePanel, Integer.valueOf(10));
- 
+        layeredPane.add(topArea, Integer.valueOf(0));
         //將layeredPane新增到frame
         frame.getContentPane().add(layeredPane);
 
@@ -122,6 +148,10 @@ public class ImageEditor extends JButton implements ActionListener {
         //讀取圖片成功
         if (userChoosImage != null) 
         {
+        	//關閉舊的JFrame
+        	JFrame olderFrame = (JFrame) SwingUtilities.getWindowAncestor((JButton) e.getSource());
+            olderFrame.dispose();
+            
             //繪畫模式按鈕功能
             openDrawButton.addActionListener(new ActionListener() 
             {
@@ -140,6 +170,7 @@ public class ImageEditor extends JButton implements ActionListener {
                         bigButton.setVisible(true);
                         smallButton.setVisible(true);
                         savePaint.setVisible(true);
+                        topArea.setBackground(new Color(227,168,105));
                     }
                     else 
                     {
@@ -154,6 +185,7 @@ public class ImageEditor extends JButton implements ActionListener {
                         bigButton.setVisible(false);
                         smallButton.setVisible(false);
                         savePaint.setVisible(false);
+                        topArea.setBackground(new Color(250, 250, 240));
                     }
                 }
             }); 
@@ -228,9 +260,18 @@ public class ImageEditor extends JButton implements ActionListener {
                 @Override
                 public void actionPerformed(ActionEvent e) 
                 {
-       
-                    Rectangle rectangle = new Rectangle(0, 100, width - 200, height-150);
-        
+                	((MouseDrawingTool) drawingPanel).setDrawMode(false);
+                	layeredPane.remove(drawingPanel);
+                    layeredPane.add(drawingPanel, Integer.valueOf(9));
+                    
+                    Point location = imageLabel.getLocation();
+                    int x = location.x;
+                    int y = location.y;
+                    int userWidth = userChoosImage.getWidth(null);
+                    int userHeight = userChoosImage.getHeight(null);
+                    
+                	Rectangle rectangle = new Rectangle(x+5, y+110, userWidth, userHeight);
+                    
                     // 執行儲存圖片的程式碼
                     try 
                     {
@@ -239,13 +280,15 @@ public class ImageEditor extends JButton implements ActionListener {
                         imageLabel.setIcon(new ImageIcon(userChoosImage));
 
                         //重新排序functionPanel的位置
-                        //有bug
                         functionPanel.removeAll();
                         functionPanel.add(openDrawButton);
                         functionPanel.add(SaveButton);
 
                         //將更改後的圖片傳到下一個介面；
                         ImageNextSetting nexSetButton = new ImageNextSetting("下一步",userChoosImage);
+                        nexSetButton.setIcon(nextIcon);
+                        nexSetButton.setBackground(null);
+                        nexSetButton.setOpaque(false);
                         functionPanel.add(nexSetButton);
                         functionPanel.add(homeButton);
 
@@ -256,6 +299,7 @@ public class ImageEditor extends JButton implements ActionListener {
                         bigButton.setVisible(false); 
                         smallButton.setVisible(false); 
                         savePaint.setVisible(false);
+                        topArea.setBackground(new Color(250, 250, 240));
                     }
                     catch (AWTException e1) 
                     {
@@ -282,8 +326,16 @@ public class ImageEditor extends JButton implements ActionListener {
         public void actionPerformed(ActionEvent e) 
         {
         	BufferedImage image = null;
-       	 	Rectangle rectangle = new Rectangle(0, 100, width - 200, height-150);
-       	 	try 
+        	
+        	Point location = imageLabel.getLocation();
+        	int x = location.x;
+            int y = location.y;
+            int userWidth = userChoosImage.getWidth(null);
+            int userHeight = userChoosImage.getHeight(null);
+            
+        	Rectangle rectangle = new Rectangle(x+5, y+110, userWidth, userHeight);
+        	
+        	try 
             {
                 image = new Robot().createScreenCapture(rectangle);
             }

@@ -34,8 +34,8 @@ public class AutoSentImage extends JButton implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         try {
             //獲取chrome插件，並開啟chrome瀏覽器
-            System.setProperty("webdriver.chrome.driver", "C:\\Users\\USER\\Desktop\\Demo1\\所需物件\\Chrome\\chromedriver_win32\\chromedriver.exe");
-            System.setProperty("webdriver.chrome.driver", "C:\\Users\\USER\\Desktop\\need intall\\Chrome\\chromedriver_win32\\chromedriver.exe");
+            //System.setProperty("webdriver.chrome.driver", "C:\\Users\\USER\\Desktop\\Demo1\\所需物件\\Chrome\\chromedriver_win32\\chromedriver.exe");
+            System.setProperty("webdriver.chrome.driver", "src\\chromedriver.exe");
             ////////自動傳送圖片////////
             Robot robot = new Robot();
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -51,52 +51,60 @@ public class AutoSentImage extends JButton implements ActionListener {
                 // 創建一個JOptionPane來請求使用者輸入帳號
                 //String userAccount = JOptionPane.showInputDialog(frame, "請輸入帳號:");
                 //String userPassword = JOptionPane.showInputDialog(frame, "請輸入密碼:");
-                String sendName = JOptionPane.showInputDialog(frame, "請輸入傳送對象名稱:");
-
-                //開啟messenger網站，等待三秒完後登入
-                WebDriver driver = new ChromeDriver();
-                driver.manage().window().maximize();
-                driver.get("https://www.messenger.com/?locale=zh_TW");
-                Thread.sleep(3000);
-                //driver.findElement(By.id("email")).sendKeys(userAccount);
-                //driver.findElement(By.name("pass")).sendKeys(userPassword);
-                driver.findElement(By.id("email")).sendKeys("qwe017953@gmail.com");
-                driver.findElement(By.name("pass")).sendKeys("zxcvbnm,./123");
-                driver.findElement(By.name("login")).click();
-
-                // 等待三秒後，點選欲選擇的欄位
-                Thread.sleep(3000);
-                //WebElement listItem = driver.findElement(By.xpath("//span[text()='曹宥翔']"));
-               // WebElement listItem = driver.findElement(By.xpath("//span[text()='李小名']"));
-                //WebElement listItem = driver.findElement(By.xpath("//span[text()='Allen Wu']"));
-                WebElement listItem = driver.findElement(By.xpath("//span[text()='" + sendName + "']"));
-                listItem.click();//點擊空白處
-                Thread.sleep(2000);
-                WebElement inputDiv = driver.findElement(By.xpath("//div[@aria-label='訊息']"));
-                inputDiv.click();
-
-                for (Image userChoosImage : userChosenImages)
+                String sendName = null;
+                sendName = JOptionPane.showInputDialog(frame, "請輸入傳送對象名稱:");
+                
+                if(sendName != null)
                 {
-                    ImageIcon icon = new ImageIcon();
-                    icon.setImage(userChoosImage);
-                    BufferedImage image = (BufferedImage) icon.getImage();
-                    TransferableImage transferable = new TransferableImage(image);
-                    clipboard.setContents(transferable, null);
+                	//開啟messenger網站，等待三秒完後登入
+                    WebDriver driver = new ChromeDriver();
+                    driver.manage().window().maximize();
+                    driver.get("https://www.messenger.com/?locale=zh_TW");
+                    Thread.sleep(2500);
+                    //driver.findElement(By.id("email")).sendKeys(userAccount);
+                    //driver.findElement(By.name("pass")).sendKeys(userPassword);
+                    driver.findElement(By.id("email")).sendKeys("qwe017953@gmail.com");
+                    driver.findElement(By.name("pass")).sendKeys("zxcvbnm,./123");
+                    driver.findElement(By.name("login")).click();
 
-                    System.out.println("This spamming will start in 5 seconds");
-                    Thread.sleep(5000);
+                    // 等待三秒後，點選欲選擇的欄位
+                    Thread.sleep(2500);
+                    //WebElement listItem = driver.findElement(By.xpath("//span[text()='曹宥翔']"));
+                   // WebElement listItem = driver.findElement(By.xpath("//span[text()='李小名']"));
+                    //WebElement listItem = driver.findElement(By.xpath("//span[text()='Allen Wu']"));
+                    WebElement listItem = driver.findElement(By.xpath("//span[text()='" + sendName + "']"));
+                    listItem.click();//點擊空白處
+                    Thread.sleep(2000);
+                    WebElement inputDiv = driver.findElement(By.xpath("//div[@aria-label='訊息']"));
                     inputDiv.click();
-                    robot.keyPress(KeyEvent.VK_CONTROL);
-                    robot.keyPress(KeyEvent.VK_V);
-                    robot.keyRelease(KeyEvent.VK_V);
-                    robot.keyRelease(KeyEvent.VK_CONTROL);
 
-                    Thread.sleep(1000);
-                    robot.keyPress(KeyEvent.VK_ENTER);
-                    robot.keyRelease(KeyEvent.VK_ENTER);
+                    for (Image userChoosImage : userChosenImages)
+                    {
+                        ImageIcon icon = new ImageIcon();
+                        icon.setImage(userChoosImage);
+                        BufferedImage image = (BufferedImage) icon.getImage();
+                        TransferableImage transferable = new TransferableImage(image);
+                        clipboard.setContents(transferable, null);
+
+                        System.out.println("This spamming will start in 5 seconds");
+                        Thread.sleep(4000);
+                        inputDiv.click();
+                        robot.keyPress(KeyEvent.VK_CONTROL);
+                        robot.keyPress(KeyEvent.VK_V);
+                        robot.keyRelease(KeyEvent.VK_V);
+                        robot.keyRelease(KeyEvent.VK_CONTROL);
+
+                        Thread.sleep(1000);
+                        robot.keyPress(KeyEvent.VK_ENTER);
+                        robot.keyRelease(KeyEvent.VK_ENTER);
+                    }
+                    JOptionPane.showMessageDialog(null, "傳輸完畢!");
+                    driver.close();
                 }
-                JOptionPane.showMessageDialog(null, "傳輸完畢!");
-                driver.close();
+                else
+                {
+                	JOptionPane.showMessageDialog(null, "請輸入傳送對象名稱");
+                }
             }
             else
             {
